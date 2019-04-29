@@ -1,61 +1,58 @@
 import java.util.Scanner;
 
-public class Communicator {
+class Communicator {
 
-    private String login;
-    private String password;
-    private int selectedProduct;
-    private int selectedOption;
-
-    Scanner scanner = new Scanner(System.in);
-
-    void userInput() {
-        System.out.println("Enter your login");
-        login = scanner.nextLine();
-        System.out.println("Enter your password");
-        password = scanner.nextLine();
+    static String loginField() {
+        System.out.println("Enter login:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 
-    void chooseProductId() {
-        System.out.println("Which product are you interested?");
-        selectedProduct = scanner.nextInt();
+    static String passwordField() {
+        System.out.println("Enter password:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 
-    void checkOption(){
-        selectedOption = scanner.nextInt();
+    static int selectAuthorization() {
+        System.out.println("Choose options: [1].Login [2].Registration");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
-
-    String getLogin() {
-        return login;
+    static int selectPanelOptions() {
+        System.out.println("Choose options: [1].Rent movie [2].Return movie [3].Show product [4].Exit");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    static int selectProduct() {
+        System.out.println("Please enter id of product:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
-    String getPassword() {
-        return password;
+    static void correctDataInfo() {
+        System.out.println("Correct data! Welcome to your account!");
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    static void wrongDataInfo() {
+        System.out.println("Wrong data! Try it again:");
     }
 
-    int getSelectedProduct() {
-        return selectedProduct;
+    static void outOfStock() {
+        System.out.println("Remember - sometimes products can be out of stock. Try next time. Bye!");
     }
 
-    public void setSelectedProduct(int selectedProduct) {
-        this.selectedProduct = selectedProduct;
+    static void successfullyRented() {
+        System.out.println("Thank you for using our services!");
     }
 
-    public int getSelectedOption() {
-        return selectedOption;
+    static void successfullyReturnProduct() {
+        System.out.println("Thank you for returning this product!");
     }
 
-    public void setSelectedOption(int selectedOption) {
-        this.selectedOption = selectedOption;
+    static void rentRequirement() {
+        System.out.println("Remember! You can rent only 1 product. - You need to return current product, before you would like to get new one.");
     }
-
 }

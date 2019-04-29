@@ -1,18 +1,20 @@
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-public class Informer {
-    RentalProcessor processor = new RentalProcessor();
+class Informer {
+    static void showProducts(Document productBase) {
+        NodeList productList = productBase.getElementsByTagName("product");
 
-
-    static void showReservations(List<Products> productsList){
-
-        productsList.stream().
-
-                filter(e -> !e.getIsInstock()).forEach(System.out::println);
+        for (int i = 0; i < productList.getLength(); i++) {
+            Node product = productList.item(i);
+            Element element = (Element) product;
+            System.out.println("Product id : " + element.getAttribute("productId"));
+            System.out.println("Name : " + element.getAttribute("name"));
+            System.out.println("Category : " + element.getAttribute("category"));
+            System.out.println("In stock : " + element.getAttribute("inStock"));
+            System.out.println("---------");
+        }
     }
-    static void showProducts(List<Products> productsList){
-        productsList.stream().
-                filter(e -> e.getIsInstock()).forEach(System.out::println);
-    }
-
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
+    <user id="0" name="user123" password="qwerty" rented="Hobbit"/>
+    <user id="1" name="u1" password="qwerty1" rented=""/>
+    <user id="2" name="u2" password="qwerty2" rented=""/>
+</users>

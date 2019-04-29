@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><products>
+    <product category="Fantasy" inStock="20" name="Hobbit" productId="0" userReviews="0"/>
+    <product category="Fantasy" inStock="19" name="Venum" productId="1" userReviews="0"/>
+</products>
