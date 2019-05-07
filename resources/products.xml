@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><products>
-    <product category="Fantasy" inStock="20" name="Hobbit" productId="0" userReviews="0"/>
-    <product category="Fantasy" inStock="19" name="Venum" productId="1" userReviews="0"/>
+    <product category="Fantasy" in_stock="13" name="Hobbit" product_id="0" user_reviews="0"/>
+    <product category="Fantasy" in_stock="5" name="Venum" product_id="1" user_reviews="0"/>
 </products>
