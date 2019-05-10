@@ -1,5 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
-    <user id="0" name="user123" password="qwerty" rented="Hobbit"/>
-    <user id="1" name="u1" password="qwerty1" rented="Hobbit"/>
-    <user id="2" name="u2" password="qwerty2" rented="Venum"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<users>
+
+
+    <user password="qwerty" rented_product="Venum" user_id="0" user_name="user123"/>
+
+
+    <user password="qwerty1" rented_product="Hobbit" user_id="1" user_name="u1"/>
+
+
+    <user password="qwerty2" rented_product="Venum" user_id="2" user_name="u2"/>
+
+
 </users>

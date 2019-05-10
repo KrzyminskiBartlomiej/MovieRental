@@ -1,10 +1,12 @@
-package com.rental.mainController;
+package com.rental.controller;
 
 import com.rental.utils.Communicator;
 import com.rental.utils.XmlWorker;
 import org.w3c.dom.*;
 
 class Panel {
+    Panel() {
+    }
     static void runPanel(Document productBase, Document usersBase, NodeList userList, NodeList productList) {
         boolean exit = false;
         do {
@@ -34,22 +36,22 @@ class Panel {
             }
         } while (!exit);
     }
-
     private static int userInputSelected;
 
     private static void rentProduct(Document productBase, Document usersBase, NodeList userList, NodeList productList) {
-        int userInput = Communicator.enterProductId();
-        userInputSelected = userInput;
-        XmlWorker.takeProductOutOfStock(productList, userInput);
-        XmlWorker.enterProductNameToUserBase(productList, userList, userInput);
-        XmlWorker.saveChangesInXmlFiles(productBase, usersBase);
+        userInputSelected = Communicator.enterProductId();
+        XmlWorker.takeProductOutOfStock(productList, userInputSelected);
+        XmlWorker.enterProductNameToUserBase(productList, userList, userInputSelected);
+        XmlWorker.saveChangesInXmlUsersFiles(usersBase);
+        XmlWorker.saveChangesInXmlProductsFiles(productBase);
         Communicator.successfullyRented();
     }
 
     private static void returnProduct(Document productBase, Document usersBase, NodeList userList, NodeList productList) {
         XmlWorker.returnProductOnStock(productList, userInputSelected);
         XmlWorker.deleteProductFromUserBase(userList);
-        XmlWorker.saveChangesInXmlFiles(productBase, usersBase);
+        XmlWorker.saveChangesInXmlUsersFiles(usersBase);
+        XmlWorker.saveChangesInXmlProductsFiles(productBase);
         Communicator.successfullyReturnProduct();
     }
 }

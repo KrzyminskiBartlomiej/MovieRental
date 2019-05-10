@@ -1,7 +1,6 @@
 package com.rental.utils;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.Scanner;
@@ -45,7 +44,7 @@ public class Communicator {
         System.out.println("Correct data! Welcome to your account!");
     }
 
-    public static void outOfStock() {
+    static void outOfStock() {
         System.out.println("Remember - sometimes products can be out of stock. Try next time. Bye!");
     }
 
@@ -63,11 +62,10 @@ public class Communicator {
 
     public static void getAndShowProducts(NodeList productList) {
         for (int i = 0; i < productList.getLength(); i++) {
-            Node product = productList.item(i);
-            Element element = (Element) product;
+            Element element = (Element) productList.item(i);
             System.out.println("Product id : " + element.getAttribute("product_id"));
-            System.out.println("Name : " + element.getAttribute("name"));
-            System.out.println("Category : " + element.getAttribute("category"));
+            System.out.println("Name : " + element.getAttribute("product_name"));
+            System.out.println("Category : " + element.getAttribute("category_name"));
             System.out.println("In stock : " + element.getAttribute("in_stock"));
             System.out.println("---------");
         }
