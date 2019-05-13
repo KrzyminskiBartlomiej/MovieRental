@@ -1,13 +1,9 @@
 package com.rental.utils;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.util.Scanner;
 
 public class Communicator {
-    private Communicator() {
-    }
+    private XmlWorker xml = new XmlWorker();
 
     public static String enterLoginField() {
         System.out.println("Enter login:");
@@ -60,13 +56,13 @@ public class Communicator {
         System.out.println("Remember! You can rent only 1 product. - You need to return current product, before you would like to get new one.");
     }
 
-    public static void getAndShowProducts(NodeList productList) {
-        for (int i = 0; i < productList.getLength(); i++) {
-            Element element = (Element) productList.item(i);
-            System.out.println("Product id : " + element.getAttribute("product_id"));
-            System.out.println("Name : " + element.getAttribute("product_name"));
-            System.out.println("Category : " + element.getAttribute("category_name"));
-            System.out.println("In stock : " + element.getAttribute("in_stock"));
+    public void getAndShowProducts() {
+        for (int i = 0; i < xml.productList.getLength(); i++) {
+            xml.productElement = (org.w3c.dom.Element) xml.productList.item(i);
+            System.out.println("Product id : " + xml.productElement.getAttribute("product_id"));
+            System.out.println("Name : " + xml.productElement.getAttribute("product_name"));
+            System.out.println("Category : " + xml.productElement.getAttribute("category_name"));
+            System.out.println("In stock : " + xml.productElement.getAttribute("in_stock"));
             System.out.println("---------");
         }
     }

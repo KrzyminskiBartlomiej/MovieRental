@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <products>
-
-
-    <product category_name="Fantasy" in_stock="24" product_id="0" product_name="Hobbit" user_reviews="0"/>
-
-
-    <product category_name="Fantasy" in_stock="1" product_id="1" product_name="Venum" user_reviews="0"/>
-
-
+    <product category_name="Fantasy" in_stock="27" product_id="0" product_name="Hobbit" user_reviews="0"/>
+    <product category_name="Fantasy" in_stock="0" product_id="1" product_name="Venum" user_reviews="0"/>
 </products>

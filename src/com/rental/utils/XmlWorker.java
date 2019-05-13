@@ -1,4 +1,5 @@
 package com.rental.utils;
+
 import com.rental.authorization.Login;
 
 import org.w3c.dom.*;
@@ -17,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 
 public class XmlWorker {
+
     private static final String USER_NAME_ATT = "user_name";
     private static final String USER_PASSWORD_ATT = "password";
     private static final String PRODUCT_IN_STOCK_ATT = "in_stock";
@@ -25,28 +27,40 @@ public class XmlWorker {
     private static final String USER_ID_ATT = "user_id";
     private static final String USER_BASE_PATH = "resources/users.xml";
     private static final String PRODUCT_BASE_PATH = "resources/products.xml";
-    public Document productsBase;
-    public Document usersBase;
-    public NodeList productList;
+    private static final String USER_TAG_NAME = "user";
+    private static final String PRODUCT_TAG_NAME = "product";
+    private Document productsBase;
+    private Document usersBase;
+    NodeList productList;
     public NodeList userList;
-    public Element rootUser;
-    public Element rootElementUser;
+    private Element rootUser;
+    private Element rootElementUser;
+    private DOMSource productSource;
+    private DOMSource usersSource;
+    Element productElement;
 
-    public XmlWorker() throws ParserConfigurationException, IOException, SAXException {
+    public XmlWorker() {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                 .newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory
-                .newDocumentBuilder();
-        this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
-        this.usersBase = documentBuilder.parse(USER_BASE_PATH);
-        this.productList = productsBase.getElementsByTagName("product");
-        this.userList = usersBase.getElementsByTagName("user");
+        try {
+            DocumentBuilder documentBuilder = documentBuilderFactory
+                    .newDocumentBuilder();
+            this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
+            this.usersBase = documentBuilder.parse(USER_BASE_PATH);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException | IOException e) {
+            e.printStackTrace();
+        }
+        this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
+        this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
         this.rootUser = usersBase.getDocumentElement();
         this.rootElementUser = usersBase.getDocumentElement();
+        this.productSource = new DOMSource(this.productsBase);
+        this.usersSource = new DOMSource(this.usersBase);
     }
 
-    public static void saveChangesInXmlProductsFiles(Document productBase) {
-        DOMSource productSource = new DOMSource(productBase);
+    private void saveChangesInXmlProductsFiles() {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
@@ -61,8 +75,7 @@ public class XmlWorker {
         }
     }
 
-    public static void saveChangesInXmlUsersFiles(Document usersBase) {
-        DOMSource usersSource = new DOMSource(usersBase);
+    public void saveChangesInXmlUsersFiles() {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
@@ -77,15 +90,15 @@ public class XmlWorker {
         }
     }
 
-    public static String getUserNameFromBase(NodeList userList, int userId) {
+    public String getUserNameFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_NAME_ATT).getNodeValue();
     }
 
-    public static String getUserPasswordFromBase(NodeList userList, int userId) {
+    public String getUserPasswordFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_PASSWORD_ATT).getNodeValue();
     }
 
-    public static void takeProductOutOfStock(NodeList productList, int userInput) {
+    public void takeProductOutOfStock(int userInput) {
         String getInStock = productList.item(userInput).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
         getNewInStock--;
@@ -96,33 +109,37 @@ public class XmlWorker {
         productList.item(userInput).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
     }
 
-    public static void returnProductOnStock(NodeList productList, int userInputSelected) {
+    public void returnProductOnStock(int userInputSelected) {
         String getInStock = productList.item(userInputSelected).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
         getNewInStock++;
         productList.item(userInputSelected).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
+        saveChangesInXmlUsersFiles();
+        saveChangesInXmlProductsFiles();
     }
 
-    public static void deleteProductFromUserBase(NodeList userList) {
+    public void deleteProductFromUserBase(Login login) {
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
-            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(login.getNameOfLoggedUser())) {
                 ((Element) tryToFindUser).setAttribute(RENTED_PRODUCT_ATT, null);
             }
         }
+        saveChangesInXmlUsersFiles();
+        saveChangesInXmlProductsFiles();
     }
 
-    public static void enterProductNameToUserBase(NodeList productList, NodeList userList, int userInput) {
+    public void enterProductNameToUserBase(int userInput, Login login) {
         String nameOfRentedProduct = productList.item(userInput).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getNodeValue();
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
-            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(login.getNameOfLoggedUser())) {
                 ((Element) tryToFindUser).setAttribute(RENTED_PRODUCT_ATT, nameOfRentedProduct);
             }
         }
     }
 
-    public static void createUserElementsAndValuesInBase(Document usersBase, Element rootElementUser, String idLengthAsString, Element rootUser) {
+    public void createUserElementsAndValuesInBase(String idLengthAsString) {
         Element account = usersBase.createElement(USER_NAME_ATT);
         Attr attr = usersBase.createAttribute(USER_ID_ATT);
         attr.setValue(idLengthAsString);
