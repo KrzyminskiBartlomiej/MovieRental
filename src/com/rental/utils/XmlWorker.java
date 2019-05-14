@@ -47,17 +47,17 @@ public class XmlWorker {
                     .newDocumentBuilder();
             this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
             this.usersBase = documentBuilder.parse(USER_BASE_PATH);
+            this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
+            this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
+            this.rootUser = usersBase.getDocumentElement();
+            this.rootElementUser = usersBase.getDocumentElement();
+            this.productSource = new DOMSource(this.productsBase);
+            this.usersSource = new DOMSource(this.usersBase);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
-        this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
-        this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
-        this.rootUser = usersBase.getDocumentElement();
-        this.rootElementUser = usersBase.getDocumentElement();
-        this.productSource = new DOMSource(this.productsBase);
-        this.usersSource = new DOMSource(this.usersBase);
     }
 
     private void saveChangesInXmlProductsFiles() {
