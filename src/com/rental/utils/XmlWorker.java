@@ -17,6 +17,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 
+/**
+ * This class is using DOM(Document Object Model)
+ * representation of XML, HTML documents handles an XML document as a tree structure.
+ * The XmlWorker is used to configure connection with XML files.
+ *
+ * @since 1.0
+ * @author Piotr Nawrocki
+ */
 public class XmlWorker {
 
     private static final String USER_NAME_ATT = "user_name";
@@ -39,6 +47,9 @@ public class XmlWorker {
     private DOMSource usersSource;
     Element productElement;
 
+    /**
+     * The XmlWorker constructor provides information about all xml, specified initialization parameters.
+     */
     public XmlWorker() {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                 .newInstance();
@@ -47,19 +58,22 @@ public class XmlWorker {
                     .newDocumentBuilder();
             this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
             this.usersBase = documentBuilder.parse(USER_BASE_PATH);
-            this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
-            this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
-            this.rootUser = usersBase.getDocumentElement();
-            this.rootElementUser = usersBase.getDocumentElement();
-            this.productSource = new DOMSource(this.productsBase);
-            this.usersSource = new DOMSource(this.usersBase);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
+        this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
+        this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
+        this.rootUser = usersBase.getDocumentElement();
+        this.rootElementUser = usersBase.getDocumentElement();
+        this.productSource = new DOMSource(this.productsBase);
+        this.usersSource = new DOMSource(this.usersBase);
     }
 
+    /**
+     * Approves all changes in the products.xml file, made at the stage of application operation.
+     */
     private void saveChangesInXmlProductsFiles() {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -74,8 +88,10 @@ public class XmlWorker {
             e.printStackTrace();
         }
     }
-
-    public void saveChangesInXmlUsersFiles() {
+    /**
+     * Approves all changes in the users.xml file, made at the stage of application operation.
+     */
+    private void saveChangesInXmlUsersFiles() {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
@@ -89,15 +105,24 @@ public class XmlWorker {
             e.printStackTrace();
         }
     }
-
+    /**
+     * Returns a string including value of parameter from users.xml file.
+     * @param userId user ID based on which tries to get proper username
+     */
     public String getUserNameFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_NAME_ATT).getNodeValue();
     }
-
+    /**
+     * Returns a string including value of parameter from users.xml file.
+     * @param userId user ID based on which tries to get proper user's password
+     */
     public String getUserPasswordFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_PASSWORD_ATT).getNodeValue();
     }
-
+    /**
+     * Gets and enters new changes attribute of products.xml file.
+     * @param userInput data entered by the user to get the appropriate selection of values from product.xml file.
+     */
     public void takeProductOutOfStock(int userInput) {
         String getInStock = productList.item(userInput).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
@@ -108,7 +133,11 @@ public class XmlWorker {
         }
         productList.item(userInput).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
     }
-
+    /**
+     * Gets a string including value of parameter from users.xml file.
+     * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     * @param userInputSelected data entered by the user to get and change value in product.xml file
+     */
     public void returnProductOnStock(int userInputSelected) {
         String getInStock = productList.item(userInputSelected).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
@@ -118,6 +147,12 @@ public class XmlWorker {
         saveChangesInXmlProductsFiles();
     }
 
+    /**
+     * Changes the name of the attribute in the users.xml file to null.
+     * Aditionally, it checks and compares the user input and xml file if the value can be added.
+     * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     * @param login reference to the object created in the RentalProcessor class
+     */
     public void deleteProductFromUserBase(Login login) {
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
@@ -129,6 +164,12 @@ public class XmlWorker {
         saveChangesInXmlProductsFiles();
     }
 
+    /**
+     * This method is responsible for attaching an appropriate selection to the xml file.
+     * Aditionally, it checks and compares the user input and xml file if the value can be added.
+     * @param userInput data entered by the user to get the appropriate selection of values ti users.xml file.
+     * @param login reference to the object created in the RentalProcessor class
+     */
     public void enterProductNameToUserBase(int userInput, Login login) {
         String nameOfRentedProduct = productList.item(userInput).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getNodeValue();
         for (int i = 0; i < userList.getLength(); i++) {
@@ -139,6 +180,11 @@ public class XmlWorker {
         }
     }
 
+    /**
+     * This method allows to create a new user who is required to provide relevant data.
+     * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     * @param idLengthAsString numerical value(String) of the attribute ID
+     */
     public void createUserElementsAndValuesInBase(String idLengthAsString) {
         Element account = usersBase.createElement(USER_NAME_ATT);
         Attr attr = usersBase.createAttribute(USER_ID_ATT);
@@ -154,5 +200,6 @@ public class XmlWorker {
         rootElementUser.appendChild(account);
         account.setAttributeNode(attrPassword);
         rootUser.appendChild(account);
+        saveChangesInXmlUsersFiles();
     }
 }
