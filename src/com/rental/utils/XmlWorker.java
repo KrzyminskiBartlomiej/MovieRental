@@ -18,11 +18,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 
 /**
- * This class is using DOM(Document Object Model)
- * representation of XML, HTML documents handles an XML document as a tree structure.
+ * Uses DOM(Document Object Model)
+ * representation of XML, HTML documents handles an XML document as a tree structure.<p>
  * The XmlWorker is used to configure connection with XML files.
  *
- * @since 1.0
  * @author Piotr Nawrocki
  */
 public class XmlWorker {
@@ -50,12 +49,13 @@ public class XmlWorker {
     /**
      * The XmlWorker constructor provides information about all xml, specified initialization parameters.
      */
+
     public XmlWorker() {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
+            .newInstance();
         try {
             DocumentBuilder documentBuilder = documentBuilderFactory
-                    .newDocumentBuilder();
+                .newDocumentBuilder();
             this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
             this.usersBase = documentBuilder.parse(USER_BASE_PATH);
         } catch (ParserConfigurationException e) {
@@ -88,6 +88,7 @@ public class XmlWorker {
             e.printStackTrace();
         }
     }
+
     /**
      * Approves all changes in the users.xml file, made at the stage of application operation.
      */
@@ -105,22 +106,28 @@ public class XmlWorker {
             e.printStackTrace();
         }
     }
+
     /**
      * Returns a string including value of parameter from users.xml file.
-     * @param userId user ID based on which tries to get proper username
+     *
+     * @param userId based on which tries to get proper username
      */
     public String getUserNameFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_NAME_ATT).getNodeValue();
     }
+
     /**
      * Returns a string including value of parameter from users.xml file.
-     * @param userId user ID based on which tries to get proper user's password
+     *
+     * @param userId based on which tries to get proper user's password
      */
     public String getUserPasswordFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_PASSWORD_ATT).getNodeValue();
     }
+
     /**
      * Gets and enters new changes attribute of products.xml file.
+     *
      * @param userInput data entered by the user to get the appropriate selection of values from product.xml file.
      */
     public void takeProductOutOfStock(int userInput) {
@@ -133,9 +140,11 @@ public class XmlWorker {
         }
         productList.item(userInput).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
     }
+
     /**
-     * Gets a string including value of parameter from users.xml file.
+     * Gets a string including value of parameter from users.xml file.<p>
      * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     *
      * @param userInputSelected data entered by the user to get and change value in product.xml file
      */
     public void returnProductOnStock(int userInputSelected) {
@@ -149,8 +158,9 @@ public class XmlWorker {
 
     /**
      * Changes the name of the attribute in the users.xml file to null.
-     * Aditionally, it checks and compares the user input and xml file if the value can be added.
+     * Additionally, it checks and compares the user input and xml file if the value can be added.
      * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     *
      * @param login reference to the object created in the RentalProcessor class
      */
     public void deleteProductFromUserBase(Login login) {
@@ -165,10 +175,11 @@ public class XmlWorker {
     }
 
     /**
-     * This method is responsible for attaching an appropriate selection to the xml file.
-     * Aditionally, it checks and compares the user input and xml file if the value can be added.
+     * Responsible for attaching an appropriate selection to the xml file.<p>
+     * Additionally, it checks and compares the user input and xml file if the value can be added.
+     *
      * @param userInput data entered by the user to get the appropriate selection of values ti users.xml file.
-     * @param login reference to the object created in the RentalProcessor class
+     * @param login     reference to the object created in the RentalProcessor class
      */
     public void enterProductNameToUserBase(int userInput, Login login) {
         String nameOfRentedProduct = productList.item(userInput).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getNodeValue();
@@ -181,8 +192,9 @@ public class XmlWorker {
     }
 
     /**
-     * This method allows to create a new user who is required to provide relevant data.
+     * Allows to create a new user who is required to provide relevant data.<p>
      * In the case of a positive implementation, the data is entered into the appropriate xml file.
+     *
      * @param idLengthAsString numerical value(String) of the attribute ID
      */
     public void createUserElementsAndValuesInBase(String idLengthAsString) {

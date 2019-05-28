@@ -5,9 +5,8 @@ import com.rental.utils.Communicator;
 import com.rental.utils.XmlWorker;
 
 /**
- * This class allows and shows user, useful panel content after logged in.<p>
+ * Allows and shows user, useful panel content after logged in.
  *
- * @since 1.0
  * @author Piotr Nawrocki
  */
 class Panel {
@@ -15,14 +14,14 @@ class Panel {
     private Communicator communicator = new Communicator();
 
     /**
-     * This method displays available features for logged users.
+     * Displays available features for logged users.<p>
      * Successful execution of the runPanel method displays options and allows access to use all of them.
+     *
      * @param login reference to the object created in the RentalProcessor class
      */
     void runPanel(Login login) {
         boolean exit = false;
         do {
-            Communicator.rentRequirement();
             switch (Communicator.enterPanelOptions()) {
                 case 1: {
                     communicator.getAndShowProducts();
@@ -54,8 +53,8 @@ class Panel {
     /**
      * Enters changes to users.xml and products.xml files.
      * Depending on user input, the method performs proper action.
+     * 
      * @param login reference to the object created in the RentalProcessor class
-     * @see RentalProcessor
      */
     private void rentProduct(Login login) {
         this.userInputSelected = Communicator.enterProductId();
@@ -67,6 +66,7 @@ class Panel {
     /**
      * Enters changes to users.xml and products.xml files.
      * Depending on user input, the method performs appropriate action.
+     * 
      * @param login reference to the object created in the RentalProcessor class
      */
     private void returnProduct(Login login) {
