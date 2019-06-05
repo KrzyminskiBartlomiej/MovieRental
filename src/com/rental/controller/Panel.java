@@ -1,25 +1,32 @@
 package com.rental.controller;
 
-import com.rental.authorization.Login;
 import com.rental.utils.Communicator;
 import com.rental.utils.XmlWorker;
 
+/**
+ * Allows and shows user, useful panel content after logged in.
+ *
+ * @author Piotr Nawrocki
+ */
 class Panel {
-    private XmlWorker xml = new XmlWorker();
     private Communicator communicator = new Communicator();
 
-    void runPanel(Login login) {
+    /**
+     * Displays available features for logged users.<p>
+     * Successful execution of the runPanel method displays options and allows access to use all of them.
+     */
+    void runPanel() {
         boolean exit = false;
         do {
-            Communicator.rentRequirement();
             switch (Communicator.enterPanelOptions()) {
                 case 1: {
                     communicator.getAndShowProducts();
-                    rentProduct(login);
+                    rentProduct();
                     break;
                 }
                 case 2: {
-                    returnProduct(login);
+                    XmlWorker.returnRentedProduct();
+                    Communicator.successfullyReturnProduct();
                     break;
                 }
                 case 3: {
@@ -38,18 +45,13 @@ class Panel {
         } while (!exit);
     }
 
-    private int userInputSelected;
 
-    private void rentProduct(Login login) {
-        this.userInputSelected = Communicator.enterProductId();
-        xml.takeProductOutOfStock(userInputSelected);
-        xml.enterProductNameToUserBase(userInputSelected, login);
+    /**
+     * Enters changes to users.xml and products.xml files.
+     * Depending on user input, the method performs proper action.
+     */
+    private void rentProduct() {
+        XmlWorker.enterProductNameToUserBase(Communicator.enterProductId());
         Communicator.successfullyRented();
-    }
-
-    private void returnProduct(Login login) {
-        xml.returnProductOnStock(this.userInputSelected);
-        xml.deleteProductFromUserBase(login);
-        Communicator.successfullyReturnProduct();
     }
 }
