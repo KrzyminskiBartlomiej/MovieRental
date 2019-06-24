@@ -9,11 +9,10 @@ import java.util.Scanner;
  * @author Piotr Nawrocki
  */
 public class Communicator {
-    private XmlWorker xml = new XmlWorker();
 
     /**
-     * Returns the value provided by the user.
-     * 
+     * Displays special message and returns the value provided by the user.
+     *
      * @return user input
      */
     public static String enterLoginField() {
@@ -23,8 +22,8 @@ public class Communicator {
     }
 
     /**
-     * Returns the value provided by the user.
-     * 
+     * Displays special message and returns the value provided by the user.
+     *
      * @return user input
      */
     public static String enterPasswordField() {
@@ -34,7 +33,9 @@ public class Communicator {
     }
 
     /**
-     * Returns the value provided by the user.
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
      */
     public static int enterAuthorizationOption() {
         System.out.println("Choose options: [1].Login [2].Registration");
@@ -43,16 +44,31 @@ public class Communicator {
     }
 
     /**
-     * Returns the value provided by the user.
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
      */
-    public static int enterPanelOptions() {
-        System.out.println("Choose options: [1].Rent movie [2].Return movie [3].Show product [4].Show rented products [5].Exit");
+    public static int userPanelOptions() {
+        System.out.println("Choose options: [1].Rent movie [2].Return movie [3].Show product [4].Delete Movie [5].Create Product [6].Exit");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
 
     /**
-     * Returns the value provided by the user.
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
+     */
+    public static int adminPanelOptions() {
+        System.out.println("Choose options: [1].Show Products [2].Delete Product [3].Create Product [4].Exit");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
+    }
+
+    /**
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
      */
     public static int enterProductId() {
         System.out.println("Please enter id of product:");
@@ -68,20 +84,21 @@ public class Communicator {
     }
 
     /**
-     * Special message displayed for the user.
+     * Displays special message and returns the value provided by the user.
      */
-    public static int idProductToReturn() {
+    static int idProductToReturn() {
         System.out.println("Please enter id of product to return:");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
+
     /**
      * Special message displayed for the user.
      */
     static void outOfStock() {
         System.out.println("Remember - sometimes products can be out of stock. Try next time. Bye!");
     }
-    
+
     /**
      * Special message displayed for the user.
      */
@@ -90,22 +107,41 @@ public class Communicator {
     }
 
     /**
-     * Special message displayed for the user.
+     * Displays special messages and returns the value provided by the user.
      */
     public static void successfullyReturnProduct() {
         System.out.println("Thank you for returning this product!");
     }
-    
+
+    public static boolean successfullyAction() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Are you sure? Type yes or no.");
+        if (!scanner.nextLine().equals("yes")) {
+            System.out.println("System logout. Probably roleOfLoggedUser goes wrong.");
+            System.exit(0);
+            return false;
+        }
+        System.out.println("It went well");
+        return true;
+    }
+
+    /**
+     * Special message displayed for the user.
+     */
+    static void rentRequirement() {
+        System.out.println("Remember! You can rent only " + XmlWorker.MAX_QUANTITY_OF_PRODUCTS + " products. - You need to return one of the product, before you would like to get new one.");
+    }
+
     /**
      * Displays the set of information in the products.xml file.
      */
-    public void getAndShowProducts() {
-        for (int i = 0; i < xml.productList.getLength(); i++) {
-            xml.productElement = (org.w3c.dom.Element) xml.productList.item(i);
-            System.out.println("Product id : " + xml.productElement.getAttribute("product_id"));
-            System.out.println("Name : " + xml.productElement.getAttribute("product_name"));
-            System.out.println("Category : " + xml.productElement.getAttribute("category_name"));
-            System.out.println("In stock : " + xml.productElement.getAttribute("in_stock"));
+    static public void getAndShowProducts() {
+        for (int i = 0; i < XmlWorker.productList.getLength(); i++) {
+            XmlWorker.productElement = (org.w3c.dom.Element) XmlWorker.productList.item(i);
+            System.out.println("Product id : " + XmlWorker.productElement.getAttribute("product_id"));
+            System.out.println("Name : " + XmlWorker.productElement.getAttribute("product_name"));
+            System.out.println("Category : " + XmlWorker.productElement.getAttribute("category_name"));
+            System.out.println("In stock : " + XmlWorker.productElement.getAttribute("in_stock"));
             System.out.println("---------");
         }
     }
@@ -115,5 +151,56 @@ public class Communicator {
      */
     public static void enteredDifferentOption() {
         System.out.println("You have chosen an unavailable option.");
+    }
+
+    /**
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
+     */
+    static int productToDelete() {
+        System.out.println("Which product would you like to delete? Type Id of product.");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
+    }
+
+    /**
+     * Special message displayed for the user.
+     */
+    public static void userNotHavePermission() {
+        System.out.println("You do not have permission to perform this action");
+    }
+
+    /**
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
+     */
+    static String enterCategory() {
+        System.out.println("Type category of product:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+    /**
+     * Displays special message and returns the value provided by the user. Works for determine how many products we have(in stock).
+     *
+     * @return user input
+     */
+    static String enterProductCount() {
+        System.out.println("Type count of product:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+    /**
+     * Displays special message and returns the value provided by the user.
+     *
+     * @return user input
+     */
+    static String enterProductName() {
+        System.out.println("Type name of product:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 }
