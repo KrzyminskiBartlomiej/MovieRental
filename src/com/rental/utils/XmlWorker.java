@@ -1,7 +1,6 @@
 package com.rental.utils;
 
 import com.rental.authorization.Login;
-
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -35,7 +34,15 @@ public class XmlWorker {
     private static final String PRODUCT_BASE_PATH = "resources/products.xml";
     private static final String USER_TAG_NAME = "user";
     private static final String PRODUCT_TAG_NAME = "product";
+    private static final String PRODUCT_ID = "product_id";
+    private static final String PRODUCT_COUNT = "in_stock";
+    private static final String PRODUCT_REVIEW = "user_reviews";
+    private static final String PRODUCT_CATEGORY = "category_name";
+    private static final String ROLE_ATT = "role";
+    private static final String USER_ROLE = "user";
+    public static final String ADMIN_ROLE = "admin";
     static final int MAX_QUANTITY_OF_PRODUCTS = 3;
+    private static final String INITIAL_REVIEW = "0";
     private static Document productsBase;
     private static Document usersBase;
     static NodeList productList;
@@ -59,7 +66,7 @@ public class XmlWorker {
             usersBase = documentBuilder.parse(USER_BASE_PATH);
             productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
             userList = usersBase.getElementsByTagName(USER_TAG_NAME);
-            this.rootUser = usersBase.getDocumentElement();
+            rootUser = usersBase.getDocumentElement();
             productSource = new DOMSource(productsBase);
             usersSource = new DOMSource(usersBase);
             documentBuilderFactory.setIgnoringElementContentWhitespace(true);
@@ -73,7 +80,7 @@ public class XmlWorker {
     /**
      * Approves all changes in the products.xml file, made at the stage of application operation.
      */
-    private static void saveChangesInXmlProductsFiles() {
+    private static void saveChangesInXmlFiles(DOMSource source, String path) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
@@ -84,30 +91,8 @@ public class XmlWorker {
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-16");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "no");
-            StreamResult productsResult = new StreamResult(PRODUCT_BASE_PATH);
-            transformer.transform(productSource, productsResult);
-
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Approves all changes in the users.xml file, made at the stage of application operation.
-     */
-    private static void saveChangesInXmlUsersFiles() {
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "all");
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-16");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "no");
-            StreamResult usersResult = new StreamResult(USER_BASE_PATH);
-            transformer.transform(usersSource, usersResult);
+            StreamResult result = new StreamResult(path);
+            transformer.transform(source, result);
             documentBuilderFactory.setIgnoringElementContentWhitespace(true);
         } catch (TransformerException e) {
             e.printStackTrace();
@@ -146,7 +131,7 @@ public class XmlWorker {
             System.exit(0);
         }
         productList.item(productId).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
-        saveChangesInXmlProductsFiles();
+        saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
     }
 
     /**
@@ -160,16 +145,16 @@ public class XmlWorker {
         int getNewInStock = Integer.parseInt(getInStock);
         getNewInStock++;
         productList.item(productId).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).setNodeValue(Integer.toString(getNewInStock));
-        saveChangesInXmlProductsFiles();
+        saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
     }
 
     /**
-     * Responsible for attaching an appropriate selection to the xml file.<p>
+     * Responsible for attaching an appropriate selection to the users.xml file.<p>
      * Additionally, it checks and compares the user input and xml file if the value can be added.
      *
-     * @param productId data entered by the user to get the appropriate selection of values ti users.xml file.
+     * @param productId data entered by the user to get the appropriate selection of values to users.xml file.
      */
-    public static void enterProductNameToUserBase(int productId) {
+    public static void addProduct(int productId) {
         String nameOfRentedProduct = productList.item(productId).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getNodeValue();
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
@@ -183,7 +168,7 @@ public class XmlWorker {
                     attr.setValue(nameOfRentedProduct);
                     products.setAttributeNode(attr);
                     takeProductFromStock(productId);
-                    saveChangesInXmlUsersFiles();
+                    saveChangesInXmlFiles(usersSource, USER_BASE_PATH);
                 } else {
                     Communicator.rentRequirement();
                     break;
@@ -192,6 +177,9 @@ public class XmlWorker {
         }
     }
 
+    /**
+     * Responsible for returning an appropriate selection from the users.xml and products.xml files.
+     */
     public static void returnRentedProduct() {
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
@@ -205,9 +193,21 @@ public class XmlWorker {
                 Node getSelectedChildNode = getNodeLoggedUser.getChildNodes().item(productId);
                 getNodeLoggedUser.removeChild(getSelectedChildNode);
                 returnProductOnStock(productId);
-                saveChangesInXmlUsersFiles();
+                saveChangesInXmlFiles(usersSource, USER_BASE_PATH);
             }
         }
+    }
+
+    /**
+     * Allows to delete product from products.xml file. After displaying all products, required to select product to delete.
+     */
+    public static void deleteProduct() {
+        Communicator.getAndShowProducts();
+        int productToDelete = Communicator.productToDelete();
+        NodeList products = productsBase.getElementsByTagName("product");
+        Node name = products.item(productToDelete);
+        name.getParentNode().removeChild(name);
+        saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
     }
 
     /**
@@ -216,7 +216,7 @@ public class XmlWorker {
      *
      * @param idLengthAsString numerical value(String) of the attribute ID
      */
-    public void createUserElementsAndValuesInBase(String idLengthAsString) {
+    public void createNewUser(String idLengthAsString) {
         Element users = usersBase.createElement(USER_TAG_NAME);
         Attr attr = usersBase.createAttribute(USER_ID_ATT);
         attr.setValue(idLengthAsString);
@@ -230,7 +230,70 @@ public class XmlWorker {
         attrPassword.setValue(Communicator.enterPasswordField());
         rootUser.appendChild(users);
         users.setAttributeNode(attrPassword);
+        Attr attRole = usersBase.createAttribute(ROLE_ATT);
+        attRole.setValue(USER_ROLE);
         rootUser.appendChild(users);
-        saveChangesInXmlUsersFiles();
+        users.setAttributeNode(attRole);
+        rootUser.appendChild(users);
+        saveChangesInXmlFiles(usersSource, USER_BASE_PATH);
+    }
+
+    /**
+     * Works for determine, what ID for new product will be typed in products.xml file.
+     *
+     * @return ID for new created product
+     */
+    private static String idForNewProduct() {
+        int lastProductId = productList.getLength() + 1;
+        return Integer.toString(lastProductId);
+    }
+
+    /**
+     * Allows to create new product in products.xml. Requires to type all necessary information of new product.
+     */
+    public void createNewProduct() {
+        Element products = productsBase.createElement(PRODUCT_TAG_NAME);
+        Attr categoryAtt = productsBase.createAttribute(PRODUCT_CATEGORY);
+        categoryAtt.setValue(Communicator.enterCategory());
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(categoryAtt);
+        Attr productId = productsBase.createAttribute(PRODUCT_ID);
+        productId.setValue(idForNewProduct());
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(productId);
+        Attr productName = productsBase.createAttribute(PRODUCT_NAME_ATT);
+        productName.setValue(Communicator.enterProductName());
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(productName);
+        Attr productCount = productsBase.createAttribute(PRODUCT_COUNT);
+        productCount.setValue(Communicator.enterProductCount());
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(productCount);
+        Attr productReview = productsBase.createAttribute(PRODUCT_REVIEW);
+        productReview.setValue(INITIAL_REVIEW);
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(productReview);
+        saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
+    }
+
+    /**
+     * Functions as a buffer. Contains information, what role logged user have.
+     */
+    private static String roleOfLoggedUser;
+
+    /**
+     * Gets information from users.xml file about what role logged user have.
+     *
+     * @return role of user
+     */
+    public static String getUserRole() {
+        for (int i = 0; i < userList.getLength(); i++) {
+            Node tryToFindUser = userList.item(i);
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
+                roleOfLoggedUser = usersBase.getElementsByTagName(USER_TAG_NAME).item(i).getAttributes().getNamedItem(ROLE_ATT).getTextContent();
+                break;
+            }
+        }
+        return roleOfLoggedUser;
     }
 }

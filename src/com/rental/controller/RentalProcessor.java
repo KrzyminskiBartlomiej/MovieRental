@@ -3,6 +3,7 @@ package com.rental.controller;
 import com.rental.authorization.Registration;
 import com.rental.authorization.Login;
 import com.rental.utils.Communicator;
+import com.rental.utils.XmlWorker;
 
 /**
  * Contains main program loop i.e. all main features which allow:<p>
@@ -18,13 +19,18 @@ public class RentalProcessor {
      */
     public static void main(String[] args) {
         Login login = new Login();
-        Panel panel = new Panel();
+        Panel userPanel = new UserPanel();
+        Panel adminPanel = new AdminPanel();
         Registration registration = new Registration();
 
         switch (Communicator.enterAuthorizationOption()) {
             case 1: {
                 login.login();
-                panel.runPanel();
+                if (XmlWorker.getUserRole().equals(XmlWorker.ADMIN_ROLE)) {
+                    adminPanel.runPanel();
+                } else {
+                    userPanel.runPanel();
+                }
                 break;
             }
             case 2: {
