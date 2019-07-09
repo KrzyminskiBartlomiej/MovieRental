@@ -15,7 +15,7 @@ public class Communicator {
      *
      * @return user input
      */
-    public static String enterLoginField() {
+    static String enterLoginField() {
         System.out.println("Enter login:");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
@@ -26,7 +26,7 @@ public class Communicator {
      *
      * @return user input
      */
-    public static String enterPasswordField() {
+    static String enterPasswordField() {
         System.out.println("Enter password:");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
@@ -49,7 +49,7 @@ public class Communicator {
      * @return user input
      */
     public static int userPanelOptions() {
-        System.out.println("Choose options: [1].Rent movie [2].Return movie [3].Show product [4].Delete Movie [5].Create Product [6].Exit");
+        System.out.println("Choose options[USER]: [1].Rent movie [2].Return movie [3].Show product [4].Exit");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
@@ -60,7 +60,7 @@ public class Communicator {
      * @return user input
      */
     public static int adminPanelOptions() {
-        System.out.println("Choose options: [1].Show Products [2].Delete Product [3].Create Product [4].Exit");
+        System.out.println("Choose options[ADMIN]: [1].Show Products [2].Delete Product [3].Create Product [4].Exit");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
@@ -70,7 +70,7 @@ public class Communicator {
      *
      * @return user input
      */
-    public static int enterProductId() {
+    static int enterProductId() {
         System.out.println("Please enter ID of product:");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
@@ -79,7 +79,7 @@ public class Communicator {
     /**
      * Special message displayed for the user.
      */
-    public static void correctDataInfo() {
+    static void correctDataInfo() {
         System.out.println("Correct data! Welcome to your account!");
     }
 
@@ -121,20 +121,6 @@ public class Communicator {
     }
 
     /**
-     * Displays the set of information in the products.xml file.
-     */
-    static public void getAndShowProducts() {
-        for (int i = 0; i < XmlWorker.productList.getLength(); i++) {
-            XmlWorker.productElement = (org.w3c.dom.Element) XmlWorker.productList.item(i);
-            System.out.println("Product id : " + XmlWorker.productElement.getAttribute("product_id"));
-            System.out.println("Name : " + XmlWorker.productElement.getAttribute("product_name"));
-            System.out.println("Category : " + XmlWorker.productElement.getAttribute("category_name"));
-            System.out.println("In stock : " + XmlWorker.productElement.getAttribute("in_stock"));
-            System.out.println("---------");
-        }
-    }
-
-    /**
      * Special message displayed for the user.
      */
     public static void enteredDifferentOption() {
@@ -153,13 +139,6 @@ public class Communicator {
     }
 
     /**
-     * Special message displayed for the user.
-     */
-    public static void userWithoutPermission() {
-        System.out.println("You do not have permission to perform this action");
-    }
-
-    /**
      * Displays special message and returns the value provided by the user.
      *
      * @return user input
@@ -175,10 +154,16 @@ public class Communicator {
      *
      * @return user input
      */
-    static String enterProductCount() {
+    static String enterXmlProductCount() {
         System.out.println("Type count of product:");
-            Scanner scanner = new Scanner(System.in);
-            return scanner.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+    static Integer enterSqlProductCount() {
+        System.out.println("Type count of product:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
     /**
@@ -190,5 +175,11 @@ public class Communicator {
         System.out.println("Type name of product:");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
+    }
+
+    static Integer selectDatabase() {
+        System.out.println("On which database do you want to work? [1] .XML [2] .SQL");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 }

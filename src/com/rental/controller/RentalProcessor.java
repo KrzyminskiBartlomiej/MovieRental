@@ -1,9 +1,6 @@
 package com.rental.controller;
 
-import com.rental.authorization.Registration;
-import com.rental.authorization.Login;
-import com.rental.utils.Communicator;
-import com.rental.utils.XmlWorker;
+import com.rental.utils.*;
 
 /**
  * Contains main program loop i.e. all main features which allow:<p>
@@ -14,27 +11,33 @@ import com.rental.utils.XmlWorker;
  * @author Piotr Nawrocki
  */
 public class RentalProcessor {
+    private static Panel userPanel = new UserPanel();
+    private static Panel adminPanel = new AdminPanel();
+    private static final String ADMIN_ROLE = "admin";
+    public static final String USER_ROLE = "user";
+
     /**
      * Entry point of application.
      */
     public static void main(String[] args) {
-        Login login = new Login();
-        Panel userPanel = new UserPanel();
-        Panel adminPanel = new AdminPanel();
-        Registration registration = new Registration();
+        DatabaseFactory databaseFactory = new DatabaseFactory();
+        Worker worker;
+        worker = databaseFactory.runDatabase();
+        runProcessor(worker);
+    }
 
+    private static void runProcessor(Worker worker) {
         switch (Communicator.enterAuthorizationOption()) {
             case 1: {
-                login.login();
-                if (XmlWorker.getUserRole().equals(XmlWorker.ADMIN_ROLE)) {
-                    adminPanel.runPanel();
+                worker.login();
+                if (worker.getUserRole().equals(ADMIN_ROLE)) {
+                    adminPanel.runPanel(worker);
                 } else {
-                    userPanel.runPanel();
+                    userPanel.runPanel(worker);
                 }
-                break;
             }
             case 2: {
-                registration.signUp();
+                worker.registration();
                 break;
             }
             default: {

@@ -1,7 +1,7 @@
 package com.rental.controller;
 
 import com.rental.utils.Communicator;
-import com.rental.utils.XmlWorker;
+import com.rental.utils.Worker;
 
 /**
  * Allows to use panel with available actions to logged in user with role marked as "user"(in users.xml).
@@ -10,43 +10,27 @@ import com.rental.utils.XmlWorker;
  */
 public class UserPanel implements Panel {
 
-    public void deleteMovie() {
-        Communicator.userWithoutPermission();
-    }
-
-    public void createProduct() {
-        Communicator.userWithoutPermission();
-    }
-
     @Override
-    public void runPanel() {
+    public void runPanel(Worker worker) {
         boolean exit = false;
         do {
             switch (Communicator.userPanelOptions()) {
                 case 1: {
-                    Communicator.getAndShowProducts();
-                    XmlWorker.addProduct(Communicator.enterProductId());
+                    worker.showAllMovie();
+                    worker.rentProduct();
                     Communicator.successfullyRented();
                     break;
                 }
                 case 2: {
-                    XmlWorker.returnRentedProduct();
+                    worker.returnRentedProduct();
                     Communicator.successfullyReturnProduct();
                     break;
                 }
                 case 3: {
-                    showAllMovie();
+                    worker.showAllMovie();
                     break;
                 }
                 case 4: {
-                    deleteMovie();
-                    break;
-                }
-                case 5: {
-                    createProduct();
-                    break;
-                }
-                case 6: {
                     exit = true;
                     break;
                 }
