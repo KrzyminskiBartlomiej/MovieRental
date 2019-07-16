@@ -1,6 +1,6 @@
 package com.rental.utils;
 
-import com.rental.authorization.Login;
+import com.rental.controller.RentalProcessor;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -23,53 +23,50 @@ import java.io.IOException;
  *
  * @author Piotr Nawrocki
  */
-public class XmlWorker {
-    private static final String USER_NAME_ATT = "user_name";
-    private static final String USER_PASSWORD_ATT = "password";
-    private static final String PRODUCT_IN_STOCK_ATT = "in_stock";
-    private static final String RENTED_PRODUCT_ATT = "rented_product";
-    private static final String PRODUCT_NAME_ATT = "product_name";
-    private static final String USER_ID_ATT = "user_id";
-    private static final String USER_BASE_PATH = "resources/users.xml";
-    private static final String PRODUCT_BASE_PATH = "resources/products.xml";
-    private static final String USER_TAG_NAME = "user";
-    private static final String PRODUCT_TAG_NAME = "product";
-    private static final String PRODUCT_ID = "product_id";
-    private static final String PRODUCT_COUNT = "in_stock";
-    private static final String PRODUCT_REVIEW = "user_reviews";
-    private static final String PRODUCT_CATEGORY = "category_name";
-    private static final String ROLE_ATT = "role";
-    private static final String USER_ROLE = "user";
-    public static final String ADMIN_ROLE = "admin";
-    static final int MAX_QUANTITY_OF_PRODUCTS = 3;
-    private static final String INITIAL_REVIEW = "0";
-    private static Document productsBase;
-    private static Document usersBase;
-    static NodeList productList;
-    public static NodeList userList;
+public class XmlWorker implements Worker {
+    private final String USER_NAME_ATT = "user_name";
+    private final String USER_PASSWORD_ATT = "password";
+    private final String PRODUCT_IN_STOCK_ATT = "in_stock";
+    private final String RENTED_PRODUCT_ATT = "rented_product";
+    private final String PRODUCT_NAME_ATT = "product_name";
+    private final String USER_ID_ATT = "user_id";
+    private final String USER_BASE_PATH = "resources/users.xml";
+    private final String PRODUCT_BASE_PATH = "resources/products.xml";
+    private final String USER_TAG_NAME = "user";
+    private final String PRODUCT_TAG_NAME = "product";
+    private final String PRODUCT_ID_ATT = "product_id";
+    private final String PRODUCT_COUNT_ATT = "in_stock";
+    private final String PRODUCT_REVIEW_ATT = "user_reviews";
+    private final String PRODUCT_CATEGORY_ATT = "category_name";
+    private final String ROLE_ATT = "role";
+    static final int XML_MAX_QUANTITY_OF_PRODUCTS = 3;
+    private final String INITIAL_REVIEW_ATT = "0";
+    private Document productsBase;
+    private Document usersBase;
+    private NodeList productList;
+    private NodeList userList;
     private Element rootUser;
-    private static DOMSource productSource;
-    private static DOMSource usersSource;
-    static Element productElement;
-    private static DocumentBuilderFactory documentBuilderFactory;
+    private DOMSource productSource;
+    private DOMSource usersSource;
+    private Element productElement;
+    private DocumentBuilderFactory documentBuilderFactory;
 
     /**
      * The XmlWorker constructor provides information about all xml, specified initialization parameters.
      */
-    public XmlWorker() {
-        documentBuilderFactory = DocumentBuilderFactory
-            .newInstance();
+    XmlWorker() {
         try {
+            documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory
                 .newDocumentBuilder();
-            productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
-            usersBase = documentBuilder.parse(USER_BASE_PATH);
-            productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
-            userList = usersBase.getElementsByTagName(USER_TAG_NAME);
-            rootUser = usersBase.getDocumentElement();
-            productSource = new DOMSource(productsBase);
-            usersSource = new DOMSource(usersBase);
-            documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+            this.productsBase = documentBuilder.parse(PRODUCT_BASE_PATH);
+            this.usersBase = documentBuilder.parse(USER_BASE_PATH);
+            this.productList = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
+            this.userList = usersBase.getElementsByTagName(USER_TAG_NAME);
+            this.rootUser = usersBase.getDocumentElement();
+            this.productSource = new DOMSource(productsBase);
+            this.usersSource = new DOMSource(usersBase);
+            this.documentBuilderFactory.setIgnoringElementContentWhitespace(true);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException | IOException e) {
@@ -80,7 +77,7 @@ public class XmlWorker {
     /**
      * Approves all changes in the products.xml file, made at the stage of application operation.
      */
-    private static void saveChangesInXmlFiles(DOMSource source, String path) {
+    private void saveChangesInXmlFiles(DOMSource source, String path) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
@@ -104,7 +101,7 @@ public class XmlWorker {
      *
      * @param userId based on which tries to get proper username
      */
-    public String getUserNameFromBase(int userId) {
+    private String getUserNameFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_NAME_ATT).getNodeValue();
     }
 
@@ -113,7 +110,7 @@ public class XmlWorker {
      *
      * @param userId based on which tries to get proper user's password
      */
-    public String getUserPasswordFromBase(int userId) {
+    private String getUserPasswordFromBase(int userId) {
         return userList.item(userId).getAttributes().getNamedItem(USER_PASSWORD_ATT).getNodeValue();
     }
 
@@ -122,7 +119,7 @@ public class XmlWorker {
      *
      * @param productId data entered by the user to get the appropriate selection of values from product.xml file.
      */
-    private static void takeProductFromStock(int productId) {
+    private void takeProductFromStock(int productId) {
         String getInStock = productList.item(productId).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
         getNewInStock--;
@@ -140,7 +137,7 @@ public class XmlWorker {
      *
      * @param productId data entered by the user to get and change value in product.xml file
      */
-    private static void returnProductOnStock(int productId) {
+    private void returnProductOnStock(int productId) {
         String getInStock = productList.item(productId).getAttributes().getNamedItem(PRODUCT_IN_STOCK_ATT).getNodeValue();
         int getNewInStock = Integer.parseInt(getInStock);
         getNewInStock++;
@@ -151,17 +148,16 @@ public class XmlWorker {
     /**
      * Responsible for attaching an appropriate selection to the users.xml file.<p>
      * Additionally, it checks and compares the user input and xml file if the value can be added.
-     *
-     * @param productId data entered by the user to get the appropriate selection of values to users.xml file.
      */
-    public static void addProduct(int productId) {
+    public void rentProduct() {
+        int productId = Communicator.enterProductId();
         String nameOfRentedProduct = productList.item(productId).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getNodeValue();
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
-            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(nameOfLoggedUser)) {
                 NodeList getChildNodesFromUser = usersBase.getElementsByTagName(USER_TAG_NAME).item(i).getChildNodes();
                 System.out.println(getChildNodesFromUser.getLength());
-                if (MAX_QUANTITY_OF_PRODUCTS > getChildNodesFromUser.getLength()) {
+                if (XML_MAX_QUANTITY_OF_PRODUCTS > getChildNodesFromUser.getLength()) {
                     Element products = usersBase.createElement(RENTED_PRODUCT_ATT);
                     tryToFindUser.appendChild(products);
                     Attr attr = usersBase.createAttribute(PRODUCT_NAME_ATT);
@@ -180,10 +176,10 @@ public class XmlWorker {
     /**
      * Responsible for returning an appropriate selection from the users.xml and products.xml files.
      */
-    public static void returnRentedProduct() {
+    public void returnRentedProduct() {
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
-            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(nameOfLoggedUser)) {
                 NodeList getChildNodesFromUser = usersBase.getElementsByTagName(USER_TAG_NAME).item(i).getChildNodes();
                 for (int j = 0; j < getChildNodesFromUser.getLength(); j++) {
                     System.out.println(j + "." + getChildNodesFromUser.item(j).getAttributes().getNamedItem(PRODUCT_NAME_ATT).getTextContent());
@@ -201,10 +197,10 @@ public class XmlWorker {
     /**
      * Allows to delete product from products.xml file. After displaying all products, required to select product to delete.
      */
-    public static void deleteProduct() {
-        Communicator.getAndShowProducts();
+    public void deleteProduct() {
+        showAllMovie();
         int productToDelete = Communicator.productToDelete();
-        NodeList products = productsBase.getElementsByTagName("product");
+        NodeList products = productsBase.getElementsByTagName(PRODUCT_TAG_NAME);
         Node name = products.item(productToDelete);
         name.getParentNode().removeChild(name);
         saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
@@ -216,26 +212,19 @@ public class XmlWorker {
      *
      * @param idLengthAsString numerical value(String) of the attribute ID
      */
-    public void createNewUser(String idLengthAsString) {
+    private void createNewUser(String idLengthAsString) {
         Element users = usersBase.createElement(USER_TAG_NAME);
-        Attr attr = usersBase.createAttribute(USER_ID_ATT);
-        attr.setValue(idLengthAsString);
+        addUserAtt(users, USER_ID_ATT, idLengthAsString);
+        addUserAtt(users, USER_NAME_ATT, Communicator.enterLoginField());
+        addUserAtt(users, USER_PASSWORD_ATT, Communicator.enterPasswordField());
+        addUserAtt(users, ROLE_ATT, RentalProcessor.USER_ROLE);
+        saveChangesInXmlFiles(usersSource, USER_BASE_PATH);
+    }
+    private void addUserAtt(Element users, String attName, String communicator){
+        Attr attr = usersBase.createAttribute(attName);
+        attr.setValue(communicator);
         rootUser.appendChild(users);
         users.setAttributeNode(attr);
-        Attr attrLogin = usersBase.createAttribute(USER_NAME_ATT);
-        attrLogin.setValue(Communicator.enterLoginField());
-        rootUser.appendChild(users);
-        users.setAttributeNode(attrLogin);
-        Attr attrPassword = usersBase.createAttribute(USER_PASSWORD_ATT);
-        attrPassword.setValue(Communicator.enterPasswordField());
-        rootUser.appendChild(users);
-        users.setAttributeNode(attrPassword);
-        Attr attRole = usersBase.createAttribute(ROLE_ATT);
-        attRole.setValue(USER_ROLE);
-        rootUser.appendChild(users);
-        users.setAttributeNode(attRole);
-        rootUser.appendChild(users);
-        saveChangesInXmlFiles(usersSource, USER_BASE_PATH);
     }
 
     /**
@@ -243,7 +232,7 @@ public class XmlWorker {
      *
      * @return ID for new created product
      */
-    private static String idForNewProduct() {
+    private String idForNewProduct() {
         int lastProductId = productList.getLength() + 1;
         return Integer.toString(lastProductId);
     }
@@ -253,47 +242,76 @@ public class XmlWorker {
      */
     public void createNewProduct() {
         Element products = productsBase.createElement(PRODUCT_TAG_NAME);
-        Attr categoryAtt = productsBase.createAttribute(PRODUCT_CATEGORY);
-        categoryAtt.setValue(Communicator.enterCategory());
-        productsBase.getDocumentElement().appendChild(products);
-        products.setAttributeNode(categoryAtt);
-        Attr productId = productsBase.createAttribute(PRODUCT_ID);
-        productId.setValue(idForNewProduct());
-        productsBase.getDocumentElement().appendChild(products);
-        products.setAttributeNode(productId);
-        Attr productName = productsBase.createAttribute(PRODUCT_NAME_ATT);
-        productName.setValue(Communicator.enterProductName());
-        productsBase.getDocumentElement().appendChild(products);
-        products.setAttributeNode(productName);
-        Attr productCount = productsBase.createAttribute(PRODUCT_COUNT);
-        productCount.setValue(Communicator.enterProductCount());
-        productsBase.getDocumentElement().appendChild(products);
-        products.setAttributeNode(productCount);
-        Attr productReview = productsBase.createAttribute(PRODUCT_REVIEW);
-        productReview.setValue(INITIAL_REVIEW);
-        productsBase.getDocumentElement().appendChild(products);
-        products.setAttributeNode(productReview);
+        addProductAtt(products, PRODUCT_CATEGORY_ATT, Communicator.enterCategory());
+        addProductAtt(products, PRODUCT_ID_ATT, idForNewProduct());
+        addProductAtt(products, PRODUCT_NAME_ATT, Communicator.enterProductName());
+        addProductAtt(products, PRODUCT_COUNT_ATT, Communicator.enterXmlProductCount());
+        addProductAtt(products, PRODUCT_REVIEW_ATT, INITIAL_REVIEW_ATT);
         saveChangesInXmlFiles(productSource, PRODUCT_BASE_PATH);
+    }
+    
+    private void addProductAtt(Element products, String attName, String communicator){
+        Attr attribute = productsBase.createAttribute(attName);
+        attribute.setValue(String.valueOf(communicator));
+        productsBase.getDocumentElement().appendChild(products);
+        products.setAttributeNode(attribute);
     }
 
     /**
      * Functions as a buffer. Contains information, what role logged user have.
      */
-    private static String roleOfLoggedUser;
-
+    private String roleOfLoggedUser;
     /**
      * Gets information from users.xml file about what role logged user have.
      *
      * @return role of user
      */
-    public static String getUserRole() {
+    public String getUserRole() {
         for (int i = 0; i < userList.getLength(); i++) {
             Node tryToFindUser = userList.item(i);
-            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(Login.nameOfLoggedUser)) {
-                roleOfLoggedUser = usersBase.getElementsByTagName(USER_TAG_NAME).item(i).getAttributes().getNamedItem(ROLE_ATT).getTextContent();
+            if (tryToFindUser.getAttributes().getNamedItem(USER_NAME_ATT).getTextContent().equalsIgnoreCase(nameOfLoggedUser)) {
+                this.roleOfLoggedUser = usersBase.getElementsByTagName(USER_TAG_NAME).item(i).getAttributes().getNamedItem(ROLE_ATT).getTextContent();
                 break;
             }
         }
         return roleOfLoggedUser;
+    }
+
+    private String nameOfLoggedUser;
+
+    /**
+     * Uses user input and gets data from users.xml to checks if it's possible to log user in.
+     */
+    public void login() {
+        boolean temp = true;
+        while (temp) {
+            String enteredUserLogin = Communicator.enterLoginField();
+            for (int x = 0; x < userList.getLength(); x++) {
+                if (enteredUserLogin.equals(getUserNameFromBase(x)) && Communicator.enterPasswordField().equals(getUserPasswordFromBase(x))) {
+                    Communicator.correctDataInfo();
+                    this.nameOfLoggedUser = enteredUserLogin;
+                    temp = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    public void registration() {
+        int idLength = userList.getLength();
+        idLength++;
+        String idLengthAsString = Integer.toString(idLength);
+        createNewUser(idLengthAsString);
+    }
+
+    public void showAllMovie() {
+        for (int i = 0; i < productList.getLength(); i++) {
+            productElement = (org.w3c.dom.Element) productList.item(i);
+            System.out.println("Product id : " + productElement.getAttribute(PRODUCT_ID_ATT));
+            System.out.println("Name : " + productElement.getAttribute(PRODUCT_NAME_ATT));
+            System.out.println("Category : " + productElement.getAttribute(PRODUCT_CATEGORY_ATT));
+            System.out.println("In stock : " + productElement.getAttribute(PRODUCT_COUNT_ATT));
+            System.out.println("---------");
+        }
     }
 }
