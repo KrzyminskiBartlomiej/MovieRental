@@ -1,7 +1,7 @@
 package com.rental.controller;
 
 import com.rental.utils.Communicator;
-import com.rental.utils.XmlWorker;
+import com.rental.utils.Worker;
 
 /**
  * Allows to use panel with available actions to logged in user with role marked as "admin"(in users.xml).
@@ -9,37 +9,26 @@ import com.rental.utils.XmlWorker;
  * @author Piotr Nawrocki
  */
 public class AdminPanel implements Panel {
-    private XmlWorker xmlWorker = new XmlWorker();
 
     @Override
-    public void deleteMovie() {
-        XmlWorker.deleteProduct();
-    }
-
-    @Override
-    public void createProduct() {
-        xmlWorker.createNewProductInBase();
-    }
-
-    @Override
-    public void runPanel() {
-        boolean exit = false;
-        do {
+    public void runPanel(Worker worker) {
+        boolean exit = true;
+        while (exit)
             switch (Communicator.adminPanelOptions()) {
                 case 1: {
-                    showAllMovie();
+                    worker.showAllMovie();
                     break;
                 }
                 case 2: {
-                    deleteMovie();
+                    worker.deleteProduct();
                     break;
                 }
                 case 3: {
-                    createProduct();
+                    worker.createNewProduct();
                     break;
                 }
                 case 4: {
-                    exit = true;
+                    exit = false;
                     break;
                 }
                 default: {
@@ -47,6 +36,5 @@ public class AdminPanel implements Panel {
                     break;
                 }
             }
-        } while (!exit);
     }
 }

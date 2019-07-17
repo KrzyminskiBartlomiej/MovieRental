@@ -1,7 +1,7 @@
 package com.rental.controller;
 
 import com.rental.utils.Communicator;
-import com.rental.utils.XmlWorker;
+import com.rental.utils.Worker;
 
 /**
  * Allows to use panel with available actions to logged in user with role marked as "user"(in users.xml).
@@ -10,44 +10,28 @@ import com.rental.utils.XmlWorker;
  */
 public class UserPanel implements Panel {
 
-    public void deleteMovie() {
-        Communicator.userNotHavePermission();
-    }
-
-    public void createProduct() {
-        Communicator.userNotHavePermission();
-    }
-
     @Override
-    public void runPanel() {
-        boolean exit = false;
-        do {
+    public void runPanel(Worker worker) {
+        boolean exit = true;
+        while (exit) {
             switch (Communicator.userPanelOptions()) {
                 case 1: {
-                    Communicator.getAndShowProducts();
-                    XmlWorker.enterProductNameToUserBase(Communicator.enterProductId());
+                    worker.showAllMovie();
+                    worker.rentProduct();
                     Communicator.successfullyRented();
                     break;
                 }
                 case 2: {
-                    XmlWorker.returnRentedProduct();
+                    worker.returnRentedProduct();
                     Communicator.successfullyReturnProduct();
                     break;
                 }
                 case 3: {
-                    showAllMovie();
+                    worker.showAllMovie();
                     break;
                 }
                 case 4: {
-                    deleteMovie();
-                    break;
-                }
-                case 5: {
-                    createProduct();
-                    break;
-                }
-                case 6: {
-                    exit = true;
+                    exit = false;
                     break;
                 }
                 default: {
@@ -55,6 +39,6 @@ public class UserPanel implements Panel {
                     break;
                 }
             }
-        } while (!exit);
+        }
     }
 }

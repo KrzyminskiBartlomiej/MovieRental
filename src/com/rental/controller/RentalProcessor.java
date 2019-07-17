@@ -1,8 +1,6 @@
 package com.rental.controller;
 
-import com.rental.authorization.Registration;
-import com.rental.authorization.Login;
-import com.rental.utils.Communicator;
+import com.rental.utils.*;
 
 /**
  * Contains main program loop i.e. all main features which allow:<p>
@@ -13,27 +11,42 @@ import com.rental.utils.Communicator;
  * @author Piotr Nawrocki
  */
 public class RentalProcessor {
+    private static final String ADMIN_ROLE = "admin";
+    public static final String USER_ROLE = "user";
 
     /**
      * Entry point of application.
      */
     public static void main(String[] args) {
-        Login login = new Login();
-        Panel panel = new Panel();
-        Registration registration = new Registration();
+        DatabaseFactory databaseFactory = new DatabaseFactory();
+        Worker worker;
+        worker = databaseFactory.runDatabase();
+        runProcessor(worker);
+    }
 
+    /**
+     * Contains main multiple choice instruction. Allows user to login ot register to program.
+     */
+    private static void runProcessor(Worker worker) {
+        Panel userPanel = new UserPanel();
+        Panel adminPanel = new AdminPanel();
         switch (Communicator.enterAuthorizationOption()) {
             case 1: {
-                login.login();
-                panel.runPanel(login);
+                worker.login();
+                if (worker.getUserRole().equals(ADMIN_ROLE)) {
+                    adminPanel.runPanel(worker);
+                } else {
+                    userPanel.runPanel(worker);
+                }
                 break;
             }
             case 2: {
-                registration.signUp();
+                worker.registration();
                 break;
             }
             default: {
                 Communicator.enteredDifferentOption();
+                break;
             }
         }
     }
