@@ -92,6 +92,12 @@ public class Communicator {
         return scanner.nextInt();
     }
 
+    static String productToReturn() {
+        System.out.println("Please type name of product to return:");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
     /**
      * Special message displayed for the user.
      */
@@ -117,7 +123,7 @@ public class Communicator {
      * Special message displayed for the user.
      */
     static void rentRequirement() {
-        System.out.println("Remember! You can rent only " + XmlWorker.MAX_QUANTITY_OF_PRODUCTS + " products. - You need to return one of the product, before you would like to get new one.");
+        System.out.println("Remember! You can rent only " + XmlWorker.XML_MAX_QUANTITY_OF_PRODUCTS + " products. - You need to return one of the product, before you would like to get new one.");
     }
 
     /**
@@ -128,7 +134,7 @@ public class Communicator {
     }
 
     /**
-     * Displays special message and returns the value provided by the user.
+     * Displays special message(request about product ID to delete) and returns the value provided by the user.
      *
      * @return user input
      */
@@ -139,7 +145,7 @@ public class Communicator {
     }
 
     /**
-     * Displays special message and returns the value provided by the user.
+     * Displays special message(request about product category) and returns the value provided by the user.
      *
      * @return user input
      */
@@ -150,7 +156,7 @@ public class Communicator {
     }
 
     /**
-     * Displays special message and returns the value provided by the user. Works for determine how many products we have(in stock).
+     * Displays special message and returns the value provided by the user. Works for determine how many products we have(in stock). Used for Xml database.
      *
      * @return user input
      */
@@ -160,6 +166,11 @@ public class Communicator {
         return scanner.nextLine();
     }
 
+    /**
+     * Displays special message(request about product count) and returns the value provided by the user. Used for Sql database.
+     *
+     * @return user input
+     */
     static Integer enterSqlProductCount() {
         System.out.println("Type count of product:");
         Scanner scanner = new Scanner(System.in);
@@ -167,7 +178,7 @@ public class Communicator {
     }
 
     /**
-     * Displays special message and returns the value provided by the user.
+     * Displays special message(request about product name) and returns the value provided by the user.
      *
      * @return user input
      */
@@ -177,9 +188,17 @@ public class Communicator {
         return scanner.nextLine();
     }
 
+    /**
+     * Displays special message(database choice) and returns the value provided by the user.
+     *
+     * @return user input
+     */
     static Integer selectDatabase() {
         System.out.println("On which database do you want to work? [1] .XML [2] .SQL");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
+    }
+    static void productInPossessionAlready() {
+        System.out.println("You have already this product.");
     }
 }
