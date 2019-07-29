@@ -11,30 +11,28 @@ import com.rental.utils.*;
  * @author Piotr Nawrocki
  */
 public class RentalProcessor {
-
-    private static final String ADMIN_ROLE = "admin";
+    public static final String ADMIN_ROLE = "admin";
     public static final String USER_ROLE = "user";
+
     /**
      * Entry point of application.
      */
     public static void main(String[] args) {
         DatabaseFactory databaseFactory = new DatabaseFactory();
-        Worker worker;
-        worker = databaseFactory.runDatabase();
-        runProcessor(worker);
+        Worker worker = databaseFactory.runDatabase();
+        Panel panel = UserRoleFactory.runPanel(worker);
+        runProcessor(worker, panel);
     }
 
-    private static void runProcessor(Worker worker) {
-        Panel userPanel = new UserPanel();
-        Panel adminPanel = new AdminPanel();
+    /**
+     * Contains main multiple choice instruction. Allows user to login ot register to program.
+     */
+    private static void runProcessor(Worker worker, Panel panel) {
+
         switch (Communicator.enterAuthorizationOption()) {
             case 1: {
                 worker.login();
-                if (worker.getUserRole().equals(ADMIN_ROLE)) {
-                    adminPanel.runPanel(worker);
-                } else {
-                    userPanel.runPanel(worker);
-                }
+                panel.runPanel(worker);
                 break;
             }
             case 2: {

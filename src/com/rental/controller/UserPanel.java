@@ -14,26 +14,22 @@ public class UserPanel implements Panel {
     public void runPanel(Worker worker) {
         boolean exit = true;
         while (exit) {
+
             switch (Communicator.userPanelOptions()) {
-                case 1: {
+                case 1:
                     worker.showAllMovie();
                     worker.rentProduct();
-                    Communicator.successfullyRented();
                     break;
-                }
-                case 2: {
+                case 2:
                     worker.returnRentedProduct();
                     Communicator.successfullyReturnProduct();
                     break;
-                }
-                case 3: {
+                case 3:
                     worker.showAllMovie();
                     break;
-                }
-                case 4: {
+                case 4:
                     exit = false;
                     break;
-                }
                 default: {
                     Communicator.enteredDifferentOption();
                     break;

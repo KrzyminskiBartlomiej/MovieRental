@@ -9,7 +9,7 @@ import com.rental.utils.Worker;
  * @author Piotr Nawrocki
  */
 public class AdminPanel implements Panel {
-    
+
     @Override
     public void runPanel(Worker worker) {
         boolean exit = true;
@@ -36,5 +36,5 @@ public class AdminPanel implements Panel {
                     break;
                 }
             }
-        }
     }
+}
