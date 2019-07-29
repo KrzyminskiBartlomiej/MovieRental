@@ -36,10 +36,6 @@ public class SqlWorker implements Worker {
     private static final String QUANTITY_OD_PRODUCTS_QUERY = "select number_of_rentals, user_name from users";
     private DatabaseConnector databaseConnector = new DatabaseConnector();
 
-    /**
-     * The SqlWorker constructor provides information about all mySql, specified initialization parameters.
-     */
-
     public void createNewProduct() {
         try {
             PreparedStatement addProductToStockStatement = databaseConnector.connect.prepareStatement(CREATE_PRODUCT_QUERY);
@@ -108,12 +104,12 @@ public class SqlWorker implements Worker {
         boolean temp = true;
         try {
             Statement statement = databaseConnector.connect.createStatement();
-            ResultSet usersRs = statement.executeQuery(USERS_QUERY);
+            ResultSet loginUserRs = statement.executeQuery(USERS_QUERY);
             while (temp) {
                 String enterLogin = Communicator.enterLoginField();
                 String enterPassword = Communicator.enterPasswordField();
-                while (usersRs.next()) {
-                    if (usersRs.getString(SQL_USER_NAME).equals(enterLogin) && usersRs.getString(SQL_USER_PASSWORD).equals(enterPassword)) {
+                while (loginUserRs.next()) {
+                    if (loginUserRs.getString(SQL_USER_NAME).equals(enterLogin) && loginUserRs.getString(SQL_USER_PASSWORD).equals(enterPassword)) {
                         Communicator.correctDataInfo();
                         this.nameOfLoggedUser = enterLogin;
                         temp = false;
@@ -147,12 +143,12 @@ public class SqlWorker implements Worker {
             PreparedStatement rentProductStatement = databaseConnector.connect.prepareStatement(RENT_PRODUCT_QUERY);
             PreparedStatement addProductStatement = databaseConnector.connect.prepareStatement(ADD_STOCK_QUERY);
             Statement statementProductName = databaseConnector.connect.createStatement();
-            ResultSet productsNameRs = statementProductName.executeQuery(PRODUCTS_NAME_QUERY);
+            ResultSet productToRentRs = statementProductName.executeQuery(PRODUCTS_NAME_QUERY);
             int productId = Communicator.enterProductId();
-            while (productsNameRs.next()) {
-                if (productsNameRs.getInt(SQL_PRODUCT_ID) == productId) {
-                    if (!checkDuplicateProducts(productsNameRs.getString(SQL_PRODUCT_NAME))) {
-                        rentProductStatement.setString(1, productsNameRs.getString(SQL_PRODUCT_NAME) + " ");
+            while (productToRentRs.next()) {
+                if (productToRentRs.getInt(SQL_PRODUCT_ID) == productId && checkDuplicateProducts(productToRentRs.getString(SQL_PRODUCT_NAME))) {
+                    if (checkDuplicateProducts(productToRentRs.getString(SQL_PRODUCT_NAME))) {
+                        rentProductStatement.setString(1, productToRentRs.getString(SQL_PRODUCT_NAME) + " ");
                         rentProductStatement.setString(2, nameOfLoggedUser);
                         rentProductStatement.executeUpdate();
                         addProductStatement.setString(1, nameOfLoggedUser);
@@ -211,36 +207,35 @@ public class SqlWorker implements Worker {
     }
 
     public String getUserRole() {
-        StringBuilder buffer = new StringBuilder();
+        StringBuilder userRoleBuffer = new StringBuilder();
         try {
             Statement statementUserRole = databaseConnector.connect.createStatement();
             ResultSet usersRoleRs = statementUserRole.executeQuery(USERS_QUERY);
             while (usersRoleRs.next()) {
                 if (usersRoleRs.getString(SQL_USER_NAME).equals(nameOfLoggedUser)) {
-                    buffer.append(usersRoleRs.getString(SQL_USER_ROLE));
+                    userRoleBuffer.append(usersRoleRs.getString(SQL_USER_ROLE));
                 }
             }
             usersRoleRs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return buffer.toString();
+        return userRoleBuffer.toString();
     }
 
     private boolean checkDuplicateProducts(String productToRent) {
         try {
             Statement statementDuplicateUser = databaseConnector.connect.createStatement();
-            ResultSet checkDuplicateUser = statementDuplicateUser.executeQuery(USERS_QUERY);
-            while (checkDuplicateUser.next()) {
-                if (checkDuplicateUser.getString(SQL_USER_NAME).equals(nameOfLoggedUser)) {
-                    if (checkDuplicateUser.getString(SQL_RENTED_PRODUCTS).equals(productToRent)) {
-                        return false;
-                    }
+            ResultSet checkDuplicateUserRS = statementDuplicateUser.executeQuery(USERS_QUERY);
+            while (checkDuplicateUserRS.next()) {
+                if (checkDuplicateUserRS.getString(SQL_USER_NAME).equals(nameOfLoggedUser)) {
+                    if (!checkDuplicateUserRS.getString(SQL_RENTED_PRODUCTS).equals(productToRent))
+                        return true;
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return true;
+        return false;
     }
 }
